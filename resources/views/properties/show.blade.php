@@ -10,7 +10,8 @@
     {{-- Navigation --}}
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <a href="/" class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</a>
-        <div>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">Browse All</a>
             <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
             @if(auth()->user()->role && auth()->user()->role->name === 'Host')
                 <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all">Dashboard</a>

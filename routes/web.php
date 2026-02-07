@@ -7,6 +7,7 @@ use App\Http\Controllers\HostDashboardController;
 // My code starts here
 
 Route::get('/', [PropertyController::class, 'index']);
+Route::get('/search', [PropertyController::class, 'search'])->name('properties.search');
 
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);

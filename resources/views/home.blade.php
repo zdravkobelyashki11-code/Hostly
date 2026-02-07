@@ -12,7 +12,8 @@
 <body class="bg-slate-50 text-slate-900">
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</div>
-        <div>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">Browse All</a>
             @auth
                 
                 <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
