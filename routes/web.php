@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\HostDashboardController;
+use App\Http\Controllers\AdminController;
 
 // My code starts here
 
@@ -21,8 +22,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 });
 
+// Host routes
 Route::middleware(['auth', 'host'])->prefix('host')->name('host.')->group(function () {
     Route::get('/dashboard', [HostDashboardController::class, 'index'])->name('dashboard');
     Route::resource('properties', HostDashboardController::class)->except(['index', 'show']);
     Route::delete('/properties/{property}/images/{image}', [HostDashboardController::class, 'destroyImage'])->name('properties.images.destroy');
+});
+
+// Admin routes
+Route::get('/admin', [AdminController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.authenticate');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 });
