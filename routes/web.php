@@ -36,4 +36,18 @@ Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.lo
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // User CRUD
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    
+    // Property CRUD
+    Route::get('/properties/create', [AdminController::class, 'createProperty'])->name('properties.create');
+    Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
+    Route::get('/properties/{property}/edit', [AdminController::class, 'editProperty'])->name('properties.edit');
+    Route::put('/properties/{property}', [AdminController::class, 'updateProperty'])->name('properties.update');
+    Route::delete('/properties/{property}', [AdminController::class, 'destroyProperty'])->name('properties.destroy');
 });

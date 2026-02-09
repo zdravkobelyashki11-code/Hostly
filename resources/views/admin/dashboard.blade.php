@@ -37,6 +37,18 @@
             <p class="text-slate-500">Manage users and properties</p>
         </div>
 
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+                {{ session('error') }}
+            </div>
+        @endif
+
         {{-- Tab Navigation --}}
         <div class="flex gap-2 mb-6">
             <button 
@@ -57,6 +69,12 @@
 
         {{-- Users Tab --}}
         <div x-show="activeTab === 'users'" x-cloak>
+            {{-- Add User Button --}}
+            <div class="mb-4 flex justify-end">
+                <a href="{{ route('admin.users.create') }}" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
+                    + Add New User
+                </a>
+            </div>
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <table class="w-full">
                     <thead class="bg-slate-50">
@@ -66,6 +84,7 @@
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Email</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Role</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Registered</th>
+                            <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -87,6 +106,16 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-500">{{ $user->created_at->format('M d, Y') }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Edit</a>
+                                    @if($user->id !== auth()->id())
+                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
+                                        </form>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -96,6 +125,12 @@
 
         {{-- Properties Tab --}}
         <div x-show="activeTab === 'properties'" x-cloak>
+            {{-- Add Property Button --}}
+            <div class="mb-4 flex justify-end">
+                <a href="{{ route('admin.properties.create') }}" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
+                    + Add New Property
+                </a>
+            </div>
             @forelse($hosts as $host)
                 <div class="bg-white rounded-2xl shadow-lg mb-6 overflow-hidden" x-data="{ open: true }">
                     {{-- Host Header --}}
@@ -151,6 +186,16 @@
                                             <span class="px-2 py-1 rounded text-xs font-semibold {{ $property->is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500' }}">
                                                 {{ $property->is_active ? 'Active' : 'Inactive' }}
                                             </span>
+                                        </div>
+
+                                        {{-- Actions --}}
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('admin.properties.edit', $property) }}" class="px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Edit</a>
+                                            <form action="{{ route('admin.properties.destroy', $property) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this property?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
+                                            </form>
                                         </div>
                                     </div>
                                 @endforeach
