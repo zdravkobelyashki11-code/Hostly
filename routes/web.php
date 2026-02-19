@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\HostDashboardController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookingController;
 
 // My code starts here
 
@@ -20,6 +21,7 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
+    Route::post('/properties/{property}/book', [BookingController::class, 'store'])->name('bookings.store');
 });
 
 // Host routes

@@ -41,6 +41,14 @@ class User extends Authenticatable
         return $this->hasMany(Property::class, 'host_id');
     }
 
+    /**
+     * A guest can have many bookings.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'guest_id');
+    }
+
     protected function casts(): array
     {
         return [

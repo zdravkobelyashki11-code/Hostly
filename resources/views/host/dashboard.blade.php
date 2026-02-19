@@ -93,6 +93,43 @@
                 </a>
             </div>
         @endif
+
+        {{-- Upcoming Bookings --}}
+        <div class="mt-10">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Upcoming Bookings</h2>
+            @if($bookings->count() > 0)
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Guest</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Property</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Check-in</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Check-out</th>
+                                <th class="text-right px-6 py-4 text-sm font-semibold text-slate-600">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($bookings as $booking)
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-semibold text-slate-800">{{ $booking->guest->name }}</td>
+                                    <td class="px-6 py-4 text-slate-600">{{ $booking->property->title }}</td>
+                                    <td class="px-6 py-4 text-slate-600">{{ $booking->check_in->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 text-slate-600">{{ $booking->check_out->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 text-right font-semibold text-slate-800">${{ number_format($booking->total_price, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 text-center">
+                    <div class="text-4xl mb-3">📅</div>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-1">No upcoming bookings</h3>
+                    <p class="text-slate-500 text-sm">Bookings will appear here once guests reserve your properties</p>
+                </div>
+            @endif
+        </div>
     </main>
 </body>
 </html>

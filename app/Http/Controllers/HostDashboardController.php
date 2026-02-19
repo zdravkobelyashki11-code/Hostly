@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
 class HostDashboardController extends Controller
@@ -19,7 +20,13 @@ class HostDashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('host.dashboard', compact('properties'));
+        $bookings = Booking::whereIn('property_id', $properties->pluck('id'))
+            ->with(['property', 'guest'])
+            ->where('check_out', '>=', now()->toDateString())
+            ->orderBy('check_in')
+            ->get();
+
+        return view('host.dashboard', compact('properties', 'bookings'));
     }
 
     /**
