@@ -17,8 +17,11 @@
             @auth
                 
                 <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
+                @if(auth()->user()->role && auth()->user()->role->name === 'Guest')
+                <a href="{{ route('guest.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">My Bookings</a>
+                @endif
                 @if(auth()->user()->role && auth()->user()->role->name === 'Host')
-                    <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all">Dashboard</a>
+                    <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">Host Dashboard</a>
                 @endif
                 <form action="/logout" method="POST" class="inline">
                     @csrf

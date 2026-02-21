@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Models\PropertyImage;
+use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -91,7 +92,7 @@ class AdminController extends Controller
      */
     public function createUser()
     {
-        $roles = \App\Models\Role::all();
+        $roles = Role::all();
         return view('admin.users.form', compact('roles'));
     }
 
@@ -119,7 +120,7 @@ class AdminController extends Controller
      */
     public function editUser(User $user)
     {
-        $roles = \App\Models\Role::all();
+        $roles = Role::all();
         return view('admin.users.form', compact('user', 'roles'));
     }
 
@@ -203,7 +204,7 @@ class AdminController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('properties', 'public');
-                \App\Models\PropertyImage::create([
+                PropertyImage::create([
                     'property_id' => $property->id,
                     'image_path' => $path,
                     'is_primary' => $index === 0,

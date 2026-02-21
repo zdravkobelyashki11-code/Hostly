@@ -39,7 +39,7 @@ class BookingController extends Controller
             'check_in' => $checkIn,
             'check_out' => $checkOut,
             'total_price' => $totalPrice,
-            'status' => 'confirmed',
+            'status' => Booking::STATUS_PENDING,
         ]);
 
         return back()->with('success', "Booking confirmed! {$nights} night(s) for $" . number_format($totalPrice, 2));

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\Booking;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HostDashboardController extends Controller
@@ -148,5 +149,51 @@ class HostDashboardController extends Controller
         $property->delete();
 
         return redirect()->route('host.dashboard')->with('success', 'Property deleted successfully!');
+    }
+
+    /**
+     * Approve a booking.
+     */
+    public function approveBooking(Booking $booking)
+    {
+        if ($booking->property->host_id !== auth()->id()) {
+            abort(404);
+        }
+
+        $booking->update(['status' => Booking::STATUS_CONFIRMED]);
+
+        return back()->with('success', 'Booking approved successfully!');
+    }
+
+    /**
+     * Reject a booking.
+     */
+    public function rejectBooking(Booking $booking)
+    {
+        if ($booking->property->host_id !== auth()->id()) {
+            abort(404);
+        }
+
+        $booking->update(['status' => Booking::STATUS_REJECTED]);
+
+        return back()->with('success', 'Booking rejected.');
+    }
+
+    /**
+     * Show guest profile.
+     */
+    public function showGuest(User $guest)
+    {
+        // Simple authorization: check if the host has any bookings with this guest
+        $hasBookings = Booking::where('guest_id', $guest->id)
+            ->whereHas('property', function ($query) {
+                $query->where('host_id', auth()->id());
+            })->exists();
+
+        if (!$hasBookings) {
+            abort(404);
+        }
+
+        return view('host.guests.show', compact('guest'));
     }
 }

@@ -10,6 +10,7 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
+    @php use App\Models\Booking; @endphp
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <a href="/" class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</a>
         <div>
@@ -104,19 +105,47 @@
                             <tr>
                                 <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Guest</th>
                                 <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Property</th>
-                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Check-in</th>
-                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Check-out</th>
-                                <th class="text-right px-6 py-4 text-sm font-semibold text-slate-600">Total</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Dates</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Total</th>
+                                <th class="text-left px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
+                                <th class="text-right px-6 py-4 text-sm font-semibold text-slate-600">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach($bookings as $booking)
                                 <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-semibold text-slate-800">{{ $booking->guest->name }}</td>
+                                    <td class="px-6 py-4 font-semibold text-slate-800">
+                                        <a href="{{ route('host.guests.show', $booking->guest) }}" class="hover:text-indigo-600">{{ $booking->guest->name }}</a>
+                                    </td>
                                     <td class="px-6 py-4 text-slate-600">{{ $booking->property->title }}</td>
-                                    <td class="px-6 py-4 text-slate-600">{{ $booking->check_in->format('M d, Y') }}</td>
-                                    <td class="px-6 py-4 text-slate-600">{{ $booking->check_out->format('M d, Y') }}</td>
-                                    <td class="px-6 py-4 text-right font-semibold text-slate-800">${{ number_format($booking->total_price, 2) }}</td>
+                                    <td class="px-6 py-4 text-slate-600">
+                                        <div>{{ $booking->check_in->format('M d, Y') }} &rarr;</div>
+                                        <div>{{ $booking->check_out->format('M d, Y') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-slate-800 font-semibold">${{ number_format($booking->total_price, 2) }}</td>
+                                    <td class="px-6 py-4">
+                                        @if($booking->status === Booking::STATUS_CONFIRMED)
+                                            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">Approved</span>
+                                        @elseif($booking->status === Booking::STATUS_PENDING)
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-full">Pending</span>
+                                        @elseif($booking->status === Booking::STATUS_REJECTED)
+                                            <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-medium rounded-full">Rejected</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        @if($booking->status === Booking::STATUS_PENDING)
+                                            <div class="flex justify-end gap-2">
+                                                <form action="{{ route('host.bookings.approve', $booking) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors">Approve</button>
+                                                </form>
+                                                <form action="{{ route('host.bookings.reject', $booking) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to reject this booking?')">
+                                                    @csrf
+                                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">Reject</button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

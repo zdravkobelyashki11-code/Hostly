@@ -5,6 +5,7 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\HostDashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\GuestDashboardController;
 
 // My code starts here
 
@@ -24,11 +25,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/properties/{property}/book', [BookingController::class, 'store'])->name('bookings.store');
 });
 
+
+
 // Host routes
 Route::middleware(['auth', 'host'])->prefix('host')->name('host.')->group(function () {
     Route::get('/dashboard', [HostDashboardController::class, 'index'])->name('dashboard');
     Route::resource('properties', HostDashboardController::class)->except(['index', 'show']);
     Route::delete('/properties/{property}/images/{image}', [HostDashboardController::class, 'destroyImage'])->name('properties.images.destroy');
+    
+    // Booking approvals
+    Route::post('/bookings/{booking}/approve', [HostDashboardController::class, 'approveBooking'])->name('bookings.approve');
+    Route::post('/bookings/{booking}/reject', [HostDashboardController::class, 'rejectBooking'])->name('bookings.reject');
+    
+    // Guest profile viewing
+    Route::get('/guests/{guest}', [HostDashboardController::class, 'showGuest'])->name('guests.show');
+});
+
+// Guest routes
+Route::middleware(['auth'])->prefix('guest')->name('guest.')->group(function () {
+    Route::get('/dashboard', [GuestDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/bookings/{booking}/edit', [GuestDashboardController::class, 'edit'])->name('bookings.edit');
+    Route::put('/bookings/{booking}', [GuestDashboardController::class, 'update'])->name('bookings.update');
 });
 
 // Admin routes
