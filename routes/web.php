@@ -6,6 +6,7 @@ use App\Http\Controllers\HostDashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\GuestDashboardController;
+use App\Http\Controllers\ProfileController;
 
 // My code starts here
 
@@ -21,6 +22,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
     Route::post('/properties/{property}/book', [BookingController::class, 'store'])->name('bookings.store');
 });

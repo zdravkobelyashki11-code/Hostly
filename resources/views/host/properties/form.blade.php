@@ -13,7 +13,7 @@
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <a href="/" class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</a>
         <div>
-            <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
+            
             <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all">Dashboard</a>
             <form action="/logout" method="POST" class="inline">
                 @csrf

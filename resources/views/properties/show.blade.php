@@ -11,11 +11,16 @@
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <a href="/" class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</a>
         <div class="flex items-center gap-4">
-            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">Browse All</a>
-            <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
-            @if(auth()->user()->role && auth()->user()->role->name === 'Host')
-                <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all">Dashboard</a>
-            @endif
+            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">All listings</a>
+            
+            @auth
+                @if(auth()->user()->role && auth()->user()->role->name === 'Guest')
+                    <a href="{{ route('guest.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">My Bookings</a>
+                @endif
+                @if(auth()->user()->role && auth()->user()->role->name === 'Host')
+                    <a href="{{ route('host.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all">Dashboard</a>
+                @endif
+            @endauth
             <form action="/logout" method="POST" class="inline">
                 @csrf
                 <button type="submit" class="px-6 py-2.5 rounded-full font-semibold border border-slate-200 hover:bg-slate-50 transition-all">Logout</button>
@@ -136,9 +141,43 @@
                 </div>
 
                 @if($property->host)
-                    <div class="bg-slate-100 rounded-xl p-4">
-                        <h2 class="text-lg font-bold mb-1">Hosted by {{ $property->host->name }}</h2>
-                        <p class="text-slate-500 text-sm">Contact: {{ $property->host->email }}</p>
+                    <div class="bg-slate-100 rounded-xl p-6 shadow-sm border border-slate-200 mt-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 bg-white rounded-full p-1 shadow-sm">
+                                <div class="w-full h-full bg-indigo-100 rounded-full flex items-center justify-center text-xl text-indigo-600 font-bold">
+                                    {{ substr($property->host->name, 0, 1) }}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Hosted by {{ $property->host->name }}</h2>
+                                <p class="text-sm text-slate-500">Joined in {{ $property->host->created_at->format('F Y') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-sm text-slate-600 mb-4 border-y border-slate-200 py-3">
+                            <div>⭐ 4.9 (45 Reviews)</div> <!-- Hardcoded -->
+                            <div>⏱ Response rate: 95%</div> <!-- Hardcoded -->
+                            <div>
+                                🗣 {{ $property->host->profile?->languages ? implode(', ', $property->host->profile->languages) : 'English' }}
+                            </div>
+                            <div>
+                                ✅ @if($property->host->email_verified_at) Email Verified @else Not Verified @endif
+                            </div>
+                        </div>
+
+                        @if($property->host->profile?->bio)
+                            <div class="text-slate-700 italic border-l-4 border-indigo-200 pl-3 py-1 mb-4">
+                                "{{ $property->host->profile->bio }}"
+                            </div>
+                        @else
+                            <div class="text-slate-500 italic mb-4">
+                                This host hasn't added a bio yet.
+                            </div>
+                        @endif
+
+                        <div class="text-sm">
+                            <strong class="text-slate-700">Contact:</strong> {{ $property->host->email }}
+                        </div>
                     </div>
                 @endif
             </div>

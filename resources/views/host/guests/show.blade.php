@@ -37,9 +37,47 @@
 
                 <div class="pt-6 border-t border-slate-100">
                     <h2 class="text-xl font-bold text-slate-800 mb-4">About this guest</h2>
-                    <p class="text-slate-600 leading-relaxed">
-                        This guest is registered on Hostly and ready to book properties. Detailed guest reviews and profiles will be coming soon!
-                    </p>
+                    
+                    <div class="space-y-4">
+                        @if($guest->profile?->location)
+                        <div>
+                            <strong class="text-slate-700">Location:</strong>
+                            <span class="text-slate-600">{{ $guest->profile->location }}</span>
+                        </div>
+                        @endif
+
+                        @if($guest->profile?->languages)
+                        <div>
+                            <strong class="text-slate-700">Languages:</strong>
+                            <span class="text-slate-600">{{ implode(', ', $guest->profile->languages) }}</span>
+                        </div>
+                        @endif
+
+                        <div>
+                            <strong class="text-slate-700">Reputation:</strong>
+                            <span class="text-slate-600">⭐ 4.8 (12 Reviews)</span> <!-- Hardcoded as requested -->
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-700">Verification:</strong>
+                            @if($guest->email_verified_at)
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Email Verified</span>
+                            @else
+                                <span class="text-slate-500 italic">Not Verified</span>
+                            @endif
+                        </div>
+
+                        @if($guest->profile?->bio)
+                        <div class="mt-4">
+                            <strong class="text-slate-700 block mb-1">Bio:</strong>
+                            <p class="text-slate-600 leading-relaxed italic border-l-4 border-indigo-200 pl-4 py-1">
+                                "{{ $guest->profile->bio }}"
+                            </p>
+                        </div>
+                        @else
+                        <p class="text-slate-500 italic mt-4">This guest hasn't added a bio yet.</p>
+                        @endif
+                    </div>
                 </div>
                 
                 <div class="mt-8 pt-6 border-t border-slate-100 flex justify-end">

@@ -42,6 +42,6 @@ class BookingController extends Controller
             'status' => Booking::STATUS_PENDING,
         ]);
 
-        return back()->with('success', "Booking confirmed! {$nights} night(s) for $" . number_format($totalPrice, 2));
+        return back()->with('success', "Booking sent for approval. {$nights} night(s) for $" . number_format($totalPrice, 2));
     }
 }

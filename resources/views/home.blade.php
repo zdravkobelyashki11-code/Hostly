@@ -13,10 +13,10 @@
     <nav class="flex justify-between items-center px-10 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="text-2xl font-bold tracking-tight text-indigo-600">Hostly</div>
         <div class="flex items-center gap-4">
-            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">Browse All</a>
+            <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">All listings</a>
             @auth
                 
-                <span class="mr-4 text-slate-600 font-semibold">Welcome, {{ auth()->user()->name }}</span>
+                
                 @if(auth()->user()->role && auth()->user()->role->name === 'Guest')
                 <a href="{{ route('guest.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">My Bookings</a>
                 @endif
@@ -42,8 +42,7 @@
             The all-in-one information system for Hosts and Guests. Handle bookings, prevent conflicts, and scale your rental business.
         </p>
         <div class="flex justify-center gap-4">
-            <button class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200">Get Started</button>
-            <button class="px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all">View Listings</button>
+            <a href="{{ route('properties.search') }}" class="px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all inline-block w-auto text-center">View all listings</a>
         </div>
     </main>
 
