@@ -58,6 +58,30 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
+    /**
+     * Reviews given by this user.
+     */
+    public function givenReviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    /**
+     * Reviews received by this user.
+     */
+    public function receivedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewee_id')->where('review_type', 'user');
+    }
+
+    /**
+     * Get the user's average rating from received reviews.
+     */
+    public function averageRating(): float
+    {
+        return (float) $this->receivedReviews()->avg('rating');
+    }
+
     protected function casts(): array
     {
         return [

@@ -98,9 +98,9 @@
             </div>
         @endif
 
-        {{-- Upcoming Bookings --}}
+        {{-- All Bookings --}}
         <div class="mt-10">
-            <h2 class="text-2xl font-bold text-slate-800 mb-4">Upcoming Bookings</h2>
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">All Bookings</h2>
             @if($bookings->count() > 0)
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <table class="w-full">
@@ -135,7 +135,7 @@
                                             <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-medium rounded-full">Rejected</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-6 py-4 text-right" x-data="{ showReviewForm: false }">
                                         @if($booking->status === Booking::STATUS_PENDING)
                                             <div class="flex justify-end gap-2">
                                                 <form action="{{ route('host.bookings.approve', $booking) }}" method="POST" class="inline">
@@ -148,6 +148,27 @@
                                                 </form>
                                             </div>
                                         @endif
+                                        
+                                        @if($booking->status === Booking::STATUS_CONFIRMED && $booking->check_out < now() && !$booking->reviewByHost)
+                                            <button @click="showReviewForm = !showReviewForm" class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors mt-2">Review Guest</button>
+                                            
+                                            <div x-show="showReviewForm" class="mt-4 p-4 border rounded-xl bg-slate-50 text-left" style="display: none;">
+                                                <form action="{{ route('host.bookings.reviews.store', $booking) }}" method="POST">
+                                                    @csrf
+                                                    <div class="mb-3">
+                                                        <label class="block text-sm font-semibold mb-1">Rating (1-5)</label>
+                                                        <input type="number" name="rating" min="1" max="5" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="block text-sm font-semibold mb-1">Comment</label>
+                                                        <textarea name="comment" rows="2" required class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
+                                                    </div>
+                                                    <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700">Submit</button>
+                                                </form>
+                                            </div>
+                                        @elseif($booking->reviewByHost)
+                                            <div class="text-sm text-slate-500 mt-2">✓ Reviewed</div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -157,7 +178,7 @@
             @else
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 text-center">
                     <div class="text-4xl mb-3">📅</div>
-                    <h3 class="text-lg font-semibold text-slate-700 mb-1">No upcoming bookings</h3>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-1">No bookings</h3>
                     <p class="text-slate-500 text-sm">Bookings will appear here once guests reserve your properties</p>
                 </div>
             @endif

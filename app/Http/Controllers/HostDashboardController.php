@@ -23,8 +23,7 @@ class HostDashboardController extends Controller
 
         $bookings = Booking::whereIn('property_id', $properties->pluck('id'))
             ->with(['property', 'guest'])
-            ->where('check_out', '>=', now()->toDateString())
-            ->orderBy('check_in')
+            ->orderBy('check_in', 'desc')
             ->get();
 
         return view('host.dashboard', compact('properties', 'bookings'));

@@ -85,9 +85,52 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    @if($booking->status !== Booking::STATUS_REJECTED && $booking->check_in > now())
-                                        <a href="{{ route('guest.bookings.edit', $booking) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Edit Dates</a>
-                                    @endif
+                                    <div class="relative" x-data="{ showReviewForm: false }">
+                                        @if($booking->status !== Booking::STATUS_REJECTED && $booking->check_in > now())
+                                            <a href="{{ route('guest.bookings.edit', $booking) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Edit Dates</a>
+                                        @endif
+                                        
+                                        @if($booking->status === Booking::STATUS_CONFIRMED && $booking->check_out < now() && (!$booking->propertyReviewByGuest || !$booking->hostReviewByGuest))
+                                            <button @click="showReviewForm = !showReviewForm" class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors mt-2 shadow-sm">Leave Review</button>
+                                            
+                                            <div x-show="showReviewForm" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+                                                <div @click.away="showReviewForm = false" x-transition class="relative bg-white rounded-2xl shadow-2xl w-full max-w-[450px] max-h-[95vh] overflow-y-auto p-7">
+                                                    
+                                                    <button @click="showReviewForm = false" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                    </button>
+                                                    
+                                                    <form action="{{ route('guest.bookings.reviews.store', $booking) }}" method="POST">
+                                                        @csrf
+                                                        <div class="mb-5">
+                                                            <h3 class="font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">🏠 Rate The Property</h3>
+                                                            <div class="grid grid-cols-2 gap-4 mb-3">
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Accuracy</label><input type="number" name="property_accuracy" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Cleanliness</label><input type="number" name="property_cleanliness" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Location</label><input type="number" name="property_location" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Value</label><input type="number" name="property_value" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                            </div>
+                                                            <textarea name="property_comment" rows="2" placeholder="Public property feedback..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></textarea>
+                                                        </div>
+
+                                                        <div class="mb-6">
+                                                            <h3 class="font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">👤 Rate The Host</h3>
+                                                            <div class="grid grid-cols-2 gap-4 mb-3">
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Communication</label><input type="number" name="host_communication" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Check-in</label><input type="number" name="host_checkin" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                                <div class="col-span-2"><label class="block text-xs font-semibold text-slate-600 mb-1">Helpfulness</label><input type="number" name="host_helpfulness" min="1" max="5" placeholder="1-5" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></div>
+                                                            </div>
+                                                            <textarea name="host_comment" rows="2" placeholder="Public host feedback..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none transition-all"></textarea>
+                                                        </div>
+
+                                                        <button type="submit" class="w-full px-4 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition-all shadow-md">Submit Review</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @elseif($booking->propertyReviewByGuest && $booking->hostReviewByGuest)
+                                            <div class="text-sm font-medium text-emerald-600 mt-2 bg-emerald-50 inline-block px-3 py-1 rounded-full border border-emerald-100">✓ Reviewed</div>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

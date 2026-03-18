@@ -46,4 +46,20 @@ class Property extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    /**
+     * Reviews for this property.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('review_type', 'property');
+    }
+
+    /**
+     * Get the property's average rating.
+     */
+    public function averageRating(): float
+    {
+        return (float) $this->reviews()->avg('rating');
+    }
 }

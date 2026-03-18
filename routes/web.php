@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\GuestDashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 
 // My code starts here
 
@@ -43,6 +44,9 @@ Route::middleware(['auth', 'host'])->prefix('host')->name('host.')->group(functi
     
     // Guest profile viewing
     Route::get('/guests/{guest}', [HostDashboardController::class, 'showGuest'])->name('guests.show');
+
+    // Host leaving a review for guest
+    Route::post('/bookings/{booking}/reviews/host', [ReviewController::class, 'storeHostReview'])->name('bookings.reviews.store');
 });
 
 // Guest routes
@@ -50,6 +54,9 @@ Route::middleware(['auth'])->prefix('guest')->name('guest.')->group(function () 
     Route::get('/dashboard', [GuestDashboardController::class, 'index'])->name('dashboard');
     Route::get('/bookings/{booking}/edit', [GuestDashboardController::class, 'edit'])->name('bookings.edit');
     Route::put('/bookings/{booking}', [GuestDashboardController::class, 'update'])->name('bookings.update');
+    
+    // Guest leaving a review
+    Route::post('/bookings/{booking}/reviews/guest', [ReviewController::class, 'storeGuestReview'])->name('bookings.reviews.store');
 });
 
 // Admin routes

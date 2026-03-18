@@ -63,8 +63,13 @@
             {{-- Property Details --}}
             <div class="space-y-6">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">{{ $property->title }}</h1>
-                    <p class="text-xl text-slate-500">{{ $property->city }}, {{ $property->country }}</p>
+                    <div class="flex items-center gap-3 mb-2">
+                        <h1 class="text-4xl font-bold">{{ $property->title }}</h1>
+                        <span class="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                            ⭐ {{ $property->reviews->count() > 0 ? number_format($property->averageRating(), 1) : 'New' }}
+                        </span>
+                    </div>
+                    <p class="text-xl text-slate-500">{{ $property->city }}, {{ $property->country }} • {{ $property->reviews->count() }} reviews</p>
                 </div>
 
                 <div class="bg-white rounded-2xl p-6 shadow-lg">
@@ -155,7 +160,7 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 text-sm text-slate-600 mb-4 border-y border-slate-200 py-3">
-                            <div>⭐ 4.9 (45 Reviews)</div> <!-- Hardcoded -->
+                            <div>⭐ {{ $property->host->receivedReviews->count() > 0 ? number_format($property->host->averageRating(), 1) : 'New' }} ({{ $property->host->receivedReviews->count() }} Reviews)</div>
                             <div>⏱ Response rate: 95%</div> <!-- Hardcoded -->
                             <div>
                                 🗣 {{ $property->host->profile?->languages ? implode(', ', $property->host->profile->languages) : 'English' }}
@@ -179,7 +184,47 @@
                             <strong class="text-slate-700">Contact:</strong> {{ $property->host->email }}
                         </div>
                     </div>
+                    </div>
                 @endif
+                
+                {{-- Property Reviews --}}
+                <div class="mt-10 pt-8 border-t border-slate-200">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">Guest Reviews <span class="bg-indigo-100 text-indigo-800 text-sm px-3 py-1 rounded-full">⭐ {{ $property->reviews->count() > 0 ? number_format($property->averageRating(), 1) : 'New' }}</span></h2>
+                    @if($property->reviews->count() > 0)
+                        @php
+                            $avgAccuracy = collect($property->reviews)->avg('sub_ratings.accuracy');
+                            $avgCleanliness = collect($property->reviews)->avg('sub_ratings.cleanliness');
+                            $avgLocation = collect($property->reviews)->avg('sub_ratings.location');
+                            $avgValue = collect($property->reviews)->avg('sub_ratings.value');
+                        @endphp
+                        
+                        <div class="grid grid-cols-2 gap-x-12 gap-y-3 mb-8 pb-8 border-b border-slate-100">
+                            <div class="flex justify-between items-center"><span class="text-slate-600">Accuracy</span><div class="flex items-center gap-2"><div class="w-32 bg-slate-200 h-1.5 rounded-full overflow-hidden"><div class="bg-slate-900 h-1.5 rounded-full" style="width: {{ ($avgAccuracy / 5) * 100 }}%"></div></div><strong class="text-slate-900 w-6 text-right">{{ number_format($avgAccuracy, 1) }}</strong></div></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-600">Cleanliness</span><div class="flex items-center gap-2"><div class="w-32 bg-slate-200 h-1.5 rounded-full overflow-hidden"><div class="bg-slate-900 h-1.5 rounded-full" style="width: {{ ($avgCleanliness / 5) * 100 }}%"></div></div><strong class="text-slate-900 w-6 text-right">{{ number_format($avgCleanliness, 1) }}</strong></div></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-600">Location</span><div class="flex items-center gap-2"><div class="w-32 bg-slate-200 h-1.5 rounded-full overflow-hidden"><div class="bg-slate-900 h-1.5 rounded-full" style="width: {{ ($avgLocation / 5) * 100 }}%"></div></div><strong class="text-slate-900 w-6 text-right">{{ number_format($avgLocation, 1) }}</strong></div></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-600">Value</span><div class="flex items-center gap-2"><div class="w-32 bg-slate-200 h-1.5 rounded-full overflow-hidden"><div class="bg-slate-900 h-1.5 rounded-full" style="width: {{ ($avgValue / 5) * 100 }}%"></div></div><strong class="text-slate-900 w-6 text-right">{{ number_format($avgValue, 1) }}</strong></div></div>
+                        </div>
+
+                        <div class="space-y-6">
+                            @foreach($property->reviews as $review)
+                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-600">
+                                            {{ substr($review->reviewer->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-slate-800">{{ $review->reviewer->name }}</div>
+                                            <div class="text-sm text-slate-500">{{ $review->created_at->format('F Y') }} • ⭐ {{ $review->rating }}</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-600">{{ $review->comment }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-slate-500 italic">No reviews yet for this property.</p>
+                    @endif
+                </div>
             </div>
         </div>
     </main>
