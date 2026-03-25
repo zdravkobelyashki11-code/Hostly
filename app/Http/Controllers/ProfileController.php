@@ -27,11 +27,10 @@ class ProfileController extends Controller
             'address' => 'nullable|string|max:1000',
         ]);
 
-        if ($user->profile) {
-            $user->profile->update($validated);
-        } else {
-            $user->profile()->create($validated);
-        }
+        $user->profile()->updateOrCreate(
+            ['user_id' => $user->id],
+            $validated
+        );
 
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }

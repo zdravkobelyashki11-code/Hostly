@@ -159,7 +159,7 @@ class AdminController extends Controller
 
         $user->delete();
 
-        return redirect()->route('admin.dashboard')->with('success', 'User deleted successfully!');
+        return redirect()->route('admin.dashboard')->with('success', 'User banned successfully!');
     }
 
     // PROPERTY CRUD 
@@ -276,6 +276,6 @@ class AdminController extends Controller
     {
         $property->delete();
 
-        return redirect()->route('admin.dashboard')->with('success', 'Property deleted successfully!');
+        return redirect()->route('admin.dashboard')->with('success', 'Property archived successfully!');
     }
 }

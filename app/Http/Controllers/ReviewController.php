@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Models\Review;
+use App\Models\PropertyReview;
+use App\Models\UserReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -42,11 +43,9 @@ class ReviewController extends Controller
             $validated['property_value'],
         ])->average());
 
-        Review::create([
+        PropertyReview::create([
             'booking_id' => $booking->id,
-            'review_type' => 'property',
             'reviewer_id' => Auth::id(),
-            'reviewee_id' => $booking->property->host_id,
             'property_id' => $booking->property_id,
             'rating' => $propertyRating,
             'sub_ratings' => [
@@ -64,12 +63,10 @@ class ReviewController extends Controller
             $validated['host_helpfulness'],
         ])->average());
 
-        Review::create([
+        UserReview::create([
             'booking_id' => $booking->id,
-            'review_type' => 'user',
             'reviewer_id' => Auth::id(),
             'reviewee_id' => $booking->property->host_id,
-            'property_id' => null,
             'rating' => $hostRating,
             'sub_ratings' => [
                 'communication' => (int) $validated['host_communication'],
@@ -99,12 +96,10 @@ class ReviewController extends Controller
             'comment' => 'required|string|max:1000',
         ]);
 
-        Review::create([
+        UserReview::create([
             'booking_id' => $booking->id,
-            'review_type' => 'user',
             'reviewer_id' => Auth::id(),
             'reviewee_id' => $booking->guest_id,
-            'property_id' => null, // specific to the guest, not the property
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
         ]);

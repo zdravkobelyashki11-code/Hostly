@@ -15,7 +15,7 @@ return new class extends Migration
 // My code starts here
 Schema::create('properties', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('host_id')->constrained('users')->onDelete('cascade');
+    $table->foreignId('host_id')->constrained('users')->restrictOnDelete();
     $table->string('title');
     $table->text('description');
     $table->decimal('price_per_night', 10, 2);
@@ -26,7 +26,11 @@ Schema::create('properties', function (Blueprint $table) {
     $table->integer('bedrooms')->default(1);
     $table->integer('bathrooms')->default(1);
     $table->boolean('is_active')->default(true);
+    $table->softDeletes();
     $table->timestamps();
+
+    $table->index('host_id');
+    $table->index(['is_active', 'city', 'country']);
 
 });
         

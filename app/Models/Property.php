@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // My code starts here
 class Property extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'host_id',
@@ -29,7 +30,7 @@ class Property extends Model
 
     public function host(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'host_id');
+        return $this->belongsTo(User::class, 'host_id')->withTrashed();
     }
 
     public function images(): HasMany
@@ -52,7 +53,7 @@ class Property extends Model
      */
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class)->where('review_type', 'property');
+        return $this->hasMany(PropertyReview::class);
     }
 
     /**

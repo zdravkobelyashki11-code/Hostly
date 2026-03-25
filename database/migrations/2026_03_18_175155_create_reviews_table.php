@@ -11,20 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('property_reviews', function (Blueprint $table) {
             $table->id();
-            $table->string('review_type'); // 'property' or 'user'
             $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('reviewer_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('reviewee_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('property_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('rating');
+            $table->foreignId('reviewer_id')->constrained('users')->restrictOnDelete();
+            $table->foreignId('property_id')->constrained()->restrictOnDelete();
+            $table->unsignedTinyInteger('rating');
             $table->json('sub_ratings')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
 
-            // Enforce one review of a specific type per user per booking
-            $table->unique(['booking_id', 'reviewer_id', 'review_type']);
+            $table->unique(['booking_id', 'reviewer_id']);
+            $table->index('property_id');
+        });
+
+        Schema::create('user_reviews', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('reviewer_id')->constrained('users')->restrictOnDelete();
+            $table->foreignId('reviewee_id')->constrained('users')->restrictOnDelete();
+            $table->unsignedTinyInteger('rating');
+            $table->json('sub_ratings')->nullable();
+            $table->text('comment')->nullable();
+            $table->timestamps();
+
+            $table->unique(['booking_id', 'reviewer_id']);
+            $table->index('reviewee_id');
         });
     }
 
@@ -33,6 +45,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('user_reviews');
+        Schema::dropIfExists('property_reviews');
     }
 };

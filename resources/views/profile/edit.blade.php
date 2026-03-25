@@ -77,7 +77,7 @@
                                 <input type="text" id="phone_number" name="phone_number" value="{{ old('phone_number', $user->profile?->phone_number) }}" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">
                             </div>
 
-                            @if($user->role->name === 'host')
+                            @if($user->role->name === 'Host')
                             <div>
                                 <label for="address" class="block text-sm font-semibold text-slate-700 mb-1">Permanent Address</label>
                                 <textarea id="address" name="address" rows="2" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">{{ old('address', $user->profile?->address) }}</textarea>

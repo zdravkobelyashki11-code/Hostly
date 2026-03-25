@@ -8,11 +8,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     // My code starts here
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -63,7 +64,7 @@ class User extends Authenticatable
      */
     public function givenReviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewer_id');
+        return $this->hasMany(UserReview::class, 'reviewer_id');
     }
 
     /**
@@ -71,7 +72,7 @@ class User extends Authenticatable
      */
     public function receivedReviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewee_id')->where('review_type', 'user');
+        return $this->hasMany(UserReview::class, 'reviewee_id');
     }
 
     /**

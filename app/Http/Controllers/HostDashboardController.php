@@ -147,7 +147,7 @@ class HostDashboardController extends Controller
 
         $property->delete();
 
-        return redirect()->route('host.dashboard')->with('success', 'Property deleted successfully!');
+        return redirect()->route('host.dashboard')->with('success', 'Property archived successfully!');
     }
 
     /**

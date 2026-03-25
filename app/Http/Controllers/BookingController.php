@@ -21,6 +21,7 @@ class BookingController extends Controller
 
         // Check for overlapping bookings
         $overlap = Booking::where('property_id', $property->id)
+            ->where('status', '!=', Booking::STATUS_REJECTED)
             ->where('check_in', '<', $checkOut)
             ->where('check_out', '>', $checkIn)
             ->exists();

@@ -35,12 +35,12 @@ class Booking extends Model
 
     public function property(): BelongsTo
     {
-        return $this->belongsTo(Property::class);
+        return $this->belongsTo(Property::class)->withTrashed();
     }
 
     public function guest(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'guest_id');
+        return $this->belongsTo(User::class, 'guest_id')->withTrashed();
     }
 
     /**
@@ -48,10 +48,7 @@ class Booking extends Model
      */
     public function propertyReviewByGuest(): HasOne
     {
-        // reviewer is guest, property is this booking's property
-        return $this->hasOne(Review::class)
-            ->where('reviewer_id', $this->guest_id)
-            ->where('review_type', 'property');
+        return $this->hasOne(PropertyReview::class)->where('reviewer_id', $this->guest_id);
     }
 
     /**
@@ -59,10 +56,9 @@ class Booking extends Model
      */
     public function hostReviewByGuest(): HasOne
     {
-        // reviewer is guest, and the target is the host
-        return $this->hasOne(Review::class)
+        return $this->hasOne(UserReview::class)
             ->where('reviewer_id', $this->guest_id)
-            ->where('review_type', 'user');
+            ->where('reviewee_id', $this->property->host_id);
     }
 
     /**
@@ -70,15 +66,8 @@ class Booking extends Model
      */
     public function reviewByHost(): HasOne
     {
-        // reviewer is host, property is this booking's property
-        return $this->hasOne(Review::class)
-            ->where('review_type', 'user')
-            ->whereHas('reviewer', function ($query) {
-            $query->whereIn('id', function ($subQuery) {
-                $subQuery->select('host_id')
-                         ->from('properties')
-                         ->whereColumn('properties.id', 'reviews.property_id');
-            });
-        });
+        return $this->hasOne(UserReview::class)
+            ->where('reviewer_id', $this->property->host_id)
+            ->where('reviewee_id', $this->guest_id);
     }
 }
