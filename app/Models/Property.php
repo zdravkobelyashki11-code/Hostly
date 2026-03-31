@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -19,7 +20,7 @@ class Property extends Model
         'title',
         'description',
         'price_per_night',
-        'location',
+        'street_address',
         'city',
         'country',
         'max_guests',
@@ -51,9 +52,14 @@ class Property extends Model
     /**
      * Reviews for this property.
      */
-    public function reviews(): HasMany
+    public function reviews(): HasManyThrough
     {
-        return $this->hasMany(PropertyReview::class);
+        return $this->hasManyThrough(
+            PropertyReview::class,
+            Booking::class,
+            'property_id',
+            'booking_id'
+        );
     }
 
     /**

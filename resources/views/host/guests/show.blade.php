@@ -46,16 +46,9 @@
                         </div>
                         @endif
 
-                        @if($guest->profile?->languages)
-                        <div>
-                            <strong class="text-slate-700">Languages:</strong>
-                            <span class="text-slate-600">{{ implode(', ', $guest->profile->languages) }}</span>
-                        </div>
-                        @endif
-
                         <div>
                             <strong class="text-slate-700">Reputation:</strong>
-                            <span class="text-slate-600">⭐ {{ $guest->receivedReviews->count() > 0 ? number_format($guest->averageRating(), 1) : 'New' }} ({{ $guest->receivedReviews->count() }} Reviews)</span>
+                            <span class="text-slate-600">⭐ {{ $guest->receivedReviews()->count() > 0 ? number_format($guest->averageRating(), 1) : 'New' }} ({{ $guest->receivedReviews()->count() }} Reviews)</span>
                         </div>
 
                         <div>
@@ -83,9 +76,9 @@
                 {{-- Guest Reviews --}}
                 <div class="mt-8 pt-6 border-t border-slate-100">
                     <h2 class="text-xl font-bold text-slate-800 mb-4">Reviews from Hosts</h2>
-                    @if($guest->receivedReviews->count() > 0)
+                    @if($guest->receivedReviews()->count() > 0)
                         <div class="space-y-4">
-                            @foreach($guest->receivedReviews as $review)
+                            @foreach($guest->receivedReviews() as $review)
                                 <div class="bg-gray-50 p-4 rounded-xl border border-slate-100">
                                     <div class="flex justify-between items-center mb-2">
                                         <div class="font-semibold text-slate-700">Property Host</div>

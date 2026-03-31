@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,11 +70,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Reviews received by this user.
+     * Reviews received by this user as either a host or a guest.
      */
-    public function receivedReviews(): HasMany
+    public function receivedReviews(): Collection
     {
-        return $this->hasMany(UserReview::class, 'reviewee_id');
+        return $this->receivedReviewsQuery()
+            ->with(['booking.property', 'reviewer'])
+            ->get();
     }
 
     /**
@@ -80,7 +84,30 @@ class User extends Authenticatable
      */
     public function averageRating(): float
     {
-        return (float) $this->receivedReviews()->avg('rating');
+        return (float) $this->receivedReviewsQuery()->avg('user_reviews.rating');
+    }
+
+    /**
+     * Query reviews received by this user as either a host or a guest.
+     */
+    public function receivedReviewsQuery(): Builder
+    {
+        return UserReview::query()
+            ->join('bookings', 'bookings.id', '=', 'user_reviews.booking_id')
+            ->where(function (Builder $query): void {
+                $query
+                    ->where(function (Builder $query): void {
+                        $query
+                            ->where('bookings.host_id', $this->id)
+                            ->whereColumn('user_reviews.reviewer_id', 'bookings.guest_id');
+                    })
+                    ->orWhere(function (Builder $query): void {
+                        $query
+                            ->where('bookings.guest_id', $this->id)
+                            ->whereColumn('user_reviews.reviewer_id', 'bookings.host_id');
+                    });
+            })
+            ->select('user_reviews.*');
     }
 
     protected function casts(): array

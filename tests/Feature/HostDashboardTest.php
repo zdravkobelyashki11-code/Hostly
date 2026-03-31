@@ -45,7 +45,7 @@ it('allows a host to create a property', function () {
         'title' => 'My New Listing',
         'description' => 'A beautiful place to stay.',
         'price_per_night' => 120.00,
-        'location' => '123 Main St',
+        'street_address' => '123 Main St',
         'city' => 'Sofia',
         'country' => 'Bulgaria',
         'max_guests' => 4,
@@ -66,7 +66,7 @@ it('validates required fields when creating a property', function () {
 
     $response = $this->actingAs($host)->post('/host/properties', []);
 
-    $response->assertSessionHasErrors(['title', 'description', 'price_per_night', 'location', 'city', 'country', 'max_guests', 'bedrooms', 'bathrooms']);
+    $response->assertSessionHasErrors(['title', 'description', 'price_per_night', 'street_address', 'city', 'country', 'max_guests', 'bedrooms', 'bathrooms']);
 });
 
 // ── Update Property ──────────────────────────────────────────────────
@@ -79,7 +79,7 @@ it('allows a host to update their own property', function () {
         'title' => 'Updated Title',
         'description' => $property->description,
         'price_per_night' => $property->price_per_night,
-        'location' => $property->location,
+        'street_address' => $property->street_address,
         'city' => $property->city,
         'country' => $property->country,
         'max_guests' => $property->max_guests,
@@ -111,7 +111,7 @@ it('allows a host to delete their own property', function () {
     $response = $this->actingAs($host)->delete("/host/properties/{$property->id}");
 
     $response->assertRedirect(route('host.dashboard'));
-    $this->assertDatabaseMissing('properties', ['id' => $property->id]);
+    $this->assertSoftDeleted('properties', ['id' => $property->id]);
 });
 
 it('prevents a host from deleting another hosts property', function () {

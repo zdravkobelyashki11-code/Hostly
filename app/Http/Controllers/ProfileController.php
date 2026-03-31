@@ -21,8 +21,6 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'bio' => 'nullable|string|max:1000',
             'location' => 'nullable|string|max:255',
-            'languages' => 'nullable|array',
-            'languages.*' => 'string|max:50',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:1000',
         ]);

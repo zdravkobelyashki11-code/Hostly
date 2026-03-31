@@ -46,7 +46,6 @@ class ReviewController extends Controller
         PropertyReview::create([
             'booking_id' => $booking->id,
             'reviewer_id' => Auth::id(),
-            'property_id' => $booking->property_id,
             'rating' => $propertyRating,
             'sub_ratings' => [
                 'accuracy' => (int) $validated['property_accuracy'],
@@ -66,7 +65,6 @@ class ReviewController extends Controller
         UserReview::create([
             'booking_id' => $booking->id,
             'reviewer_id' => Auth::id(),
-            'reviewee_id' => $booking->property->host_id,
             'rating' => $hostRating,
             'sub_ratings' => [
                 'communication' => (int) $validated['host_communication'],
@@ -81,7 +79,7 @@ class ReviewController extends Controller
 
     public function storeHostReview(Request $request, Booking $booking)
     {
-        if (Auth::id() !== $booking->property->host_id) {
+        if (Auth::id() !== $booking->host_id) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -99,7 +97,6 @@ class ReviewController extends Controller
         UserReview::create([
             'booking_id' => $booking->id,
             'reviewer_id' => Auth::id(),
-            'reviewee_id' => $booking->guest_id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
         ]);

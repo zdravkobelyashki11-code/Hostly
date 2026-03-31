@@ -18,6 +18,7 @@ class Booking extends Model
     protected $fillable = [
         'property_id',
         'guest_id',
+        'host_id',
         'check_in',
         'check_out',
         'total_price',
@@ -43,6 +44,11 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'guest_id')->withTrashed();
     }
 
+    public function host(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'host_id')->withTrashed();
+    }
+
     /**
      * Property review left by the guest.
      */
@@ -57,8 +63,7 @@ class Booking extends Model
     public function hostReviewByGuest(): HasOne
     {
         return $this->hasOne(UserReview::class)
-            ->where('reviewer_id', $this->guest_id)
-            ->where('reviewee_id', $this->property->host_id);
+            ->where('reviewer_id', $this->guest_id);
     }
 
     /**
@@ -67,7 +72,6 @@ class Booking extends Model
     public function reviewByHost(): HasOne
     {
         return $this->hasOne(UserReview::class)
-            ->where('reviewer_id', $this->property->host_id)
-            ->where('reviewee_id', $this->guest_id);
+            ->where('reviewer_id', $this->host_id);
     }
 }

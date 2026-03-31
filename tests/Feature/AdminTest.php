@@ -124,7 +124,7 @@ it('allows an admin to delete a user', function () {
     $response = $this->actingAs($admin)->delete("/admin/users/{$user->id}");
 
     $response->assertRedirect(route('admin.dashboard'));
-    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
 it('prevents an admin from deleting themselves', function () {
@@ -148,7 +148,7 @@ it('allows an admin to create a property', function () {
         'title' => 'Admin Created Listing',
         'description' => 'A listing created by an admin.',
         'price_per_night' => 200.00,
-        'location' => '456 Admin Rd',
+        'street_address' => '456 Admin Rd',
         'city' => 'Plovdiv',
         'country' => 'Bulgaria',
         'max_guests' => 6,
@@ -168,5 +168,5 @@ it('allows an admin to delete a property', function () {
     $response = $this->actingAs($admin)->delete("/admin/properties/{$property->id}");
 
     $response->assertRedirect(route('admin.dashboard'));
-    $this->assertDatabaseMissing('properties', ['id' => $property->id]);
+    $this->assertSoftDeleted('properties', ['id' => $property->id]);
 });

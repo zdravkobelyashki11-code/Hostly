@@ -22,7 +22,7 @@ class PropertyFactory extends Factory
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),
             'price_per_night' => fake()->randomFloat(2, 30, 500),
-            'location' => fake()->address(),
+            'street_address' => fake()->streetAddress(),
             'city' => fake()->city(),
             'country' => fake()->country(),
             'max_guests' => fake()->numberBetween(1, 10),

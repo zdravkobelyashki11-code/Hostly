@@ -85,9 +85,9 @@
                 {{-- Location Fields --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label for="location" class="block text-sm font-semibold text-slate-700 mb-2">Address</label>
-                        <input type="text" name="location" id="location"
-                            value="{{ old('location', $property->location ?? '') }}"
+                        <label for="street_address" class="block text-sm font-semibold text-slate-700 mb-2">Street Address</label>
+                        <input type="text" name="street_address" id="street_address"
+                            value="{{ old('street_address', $property->street_address ?? '') }}"
                             class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             placeholder="123 Main St"
                             required>

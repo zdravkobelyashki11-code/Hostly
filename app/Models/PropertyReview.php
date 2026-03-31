@@ -10,7 +10,6 @@ class PropertyReview extends Model
     protected $fillable = [
         'booking_id',
         'reviewer_id',
-        'property_id',
         'rating',
         'sub_ratings',
         'comment',
@@ -31,10 +30,5 @@ class PropertyReview extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewer_id')->withTrashed();
-    }
-
-    public function property(): BelongsTo
-    {
-        return $this->belongsTo(Property::class);
     }
 }

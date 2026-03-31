@@ -37,6 +37,7 @@ class BookingController extends Controller
         Booking::create([
             'property_id' => $property->id,
             'guest_id' => auth()->id(),
+            'host_id' => $property->host_id,
             'check_in' => $checkIn,
             'check_out' => $checkOut,
             'total_price' => $totalPrice,
