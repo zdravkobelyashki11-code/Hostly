@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -14,22 +15,53 @@ class ProfileController extends Controller
         return view('profile.edit', compact('user'));
     }
 
+    public function store(Request $request)
+    {
+        $this->saveProfile($request);
+
+        return redirect()->route('profile.edit')->with('success', 'Profile saved successfully.');
+    }
+
     public function update(Request $request)
+    {
+        $this->saveProfile($request);
+
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
+    }
+
+    public function destroy()
+    {
+        $profile = auth()->user()->profile;
+
+        if ($profile) {
+            $profile->delete();
+        }
+
+        return redirect()->route('profile.edit')->with('success', 'Profile deleted successfully.');
+    }
+
+    private function saveProfile(Request $request): void
     {
         $user = auth()->user();
 
         $validated = $request->validate([
+            'avatar' => 'nullable|url|max:2048',
             'bio' => 'nullable|string|max:1000',
             'location' => 'nullable|string|max:255',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:1000',
         ]);
 
-        $user->profile()->updateOrCreate(
-            ['user_id' => $user->id],
-            $validated
-        );
+        $profile = Profile::withTrashed()->firstOrNew([
+            'user_id' => $user->id,
+        ]);
 
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+        if ($profile->trashed()) {
+            $profile->restore();
+        }
+
+        $profile->fill($validated);
+        $profile->user()->associate($user);
+        $profile->save();
     }
 }

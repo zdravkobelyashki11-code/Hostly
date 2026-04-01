@@ -15,8 +15,8 @@
         <div class="flex items-center gap-4">
             <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">All listings</a>
             @auth
-                
-                
+                <a href="{{ route('profile.edit') }}" class="px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">Profile</a>
+
                 @if(auth()->user()->role && auth()->user()->role->name === 'Guest')
                 <a href="{{ route('guest.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">My Bookings</a>
                 @endif

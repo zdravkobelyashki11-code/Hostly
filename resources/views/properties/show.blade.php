@@ -14,6 +14,7 @@
             <a href="{{ route('properties.search') }}" class="text-slate-600 hover:text-indigo-600 font-semibold transition-colors">All listings</a>
             
             @auth
+                <a href="{{ route('profile.edit') }}" class="px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">Profile</a>
                 @if(auth()->user()->role && auth()->user()->role->name === 'Guest')
                     <a href="{{ route('guest.dashboard') }}" class="mr-2 px-6 py-2.5 rounded-full font-semibold text-slate-600 hover:bg-slate-100 transition-all">My Bookings</a>
                 @endif
@@ -149,9 +150,13 @@
                     <div class="bg-slate-100 rounded-xl p-6 shadow-sm border border-slate-200 mt-6">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-16 h-16 bg-white rounded-full p-1 shadow-sm">
-                                <div class="w-full h-full bg-indigo-100 rounded-full flex items-center justify-center text-xl text-indigo-600 font-bold">
-                                    {{ substr($property->host->name, 0, 1) }}
-                                </div>
+                                @if($property->host->profile?->avatar)
+                                    <img src="{{ $property->host->profile->avatar }}" alt="{{ $property->host->name }}" class="w-full h-full rounded-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-indigo-100 rounded-full flex items-center justify-center text-xl text-indigo-600 font-bold">
+                                        {{ substr($property->host->name, 0, 1) }}
+                                    </div>
+                                @endif
                             </div>
                             <div>
                                 <h2 class="text-xl font-bold text-slate-800">Hosted by {{ $property->host->name }}</h2>
@@ -174,6 +179,12 @@
                         @else
                             <div class="text-slate-500 italic mb-4">
                                 This host hasn't added a bio yet.
+                            </div>
+                        @endif
+
+                        @if($property->host->profile?->location)
+                            <div class="text-sm text-slate-600 mb-4">
+                                <strong class="text-slate-700">Location:</strong> {{ $property->host->profile->location }}
                             </div>
                         @endif
 

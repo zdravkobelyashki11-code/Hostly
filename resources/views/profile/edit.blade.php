@@ -40,16 +40,75 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+                <ul class="space-y-1 text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+            <div class="p-8">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">Profile Preview</h2>
+
+                <div class="flex items-start gap-6">
+                    <div class="w-24 h-24 bg-slate-100 rounded-full p-1 shadow-sm">
+                        @if($user->profile?->avatar)
+                            <img src="{{ $user->profile->avatar }}" alt="{{ $user->name }}" class="w-full h-full rounded-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-indigo-100 rounded-full flex items-center justify-center text-2xl text-indigo-600 font-bold">
+                                {{ substr($user->name, 0, 1) }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-slate-800">{{ $user->name }}</h3>
+                        <p class="text-slate-500 mb-4">{{ $user->email }}</p>
+
+                        <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-600">
+                            <div>
+                                <strong class="text-slate-700">Location:</strong>
+                                <span>{{ $user->profile?->location ?: 'Not added yet' }}</span>
+                            </div>
+                            <div>
+                                <strong class="text-slate-700">Phone:</strong>
+                                <span>{{ $user->profile?->phone_number ?: 'Not added yet' }}</span>
+                            </div>
+                            <div class="md:col-span-2">
+                                <strong class="text-slate-700">Bio:</strong>
+                                <span>{{ $user->profile?->bio ?: 'Not added yet' }}</span>
+                            </div>
+                            <div class="md:col-span-2">
+                                <strong class="text-slate-700">Address:</strong>
+                                <span>{{ $user->profile?->address ?: 'Not added yet' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="p-8">
-                <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
+                <form action="{{ $user->profile ? route('profile.update') : route('profile.store') }}" method="POST" class="space-y-6">
                     @csrf
-                    @method('PUT')
+                    @if($user->profile)
+                        @method('PUT')
+                    @endif
 
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">Public Information</h2>
                         
                         <div class="space-y-4">
+                            <div>
+                                <label for="avatar" class="block text-sm font-semibold text-slate-700 mb-1">Avatar URL</label>
+                                <input type="url" id="avatar" name="avatar" value="{{ old('avatar', $user->profile?->avatar) }}" placeholder="https://example.com/avatar.jpg" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">
+                            </div>
+
                             <div>
                                 <label for="bio" class="block text-sm font-semibold text-slate-700 mb-1">About Me (Bio)</label>
                                 <textarea id="bio" name="bio" rows="4" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">{{ old('bio', $user->profile?->bio) }}</textarea>
@@ -72,21 +131,29 @@
                                 <input type="text" id="phone_number" name="phone_number" value="{{ old('phone_number', $user->profile?->phone_number) }}" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">
                             </div>
 
-                            @if($user->role->name === 'Host')
                             <div>
-                                <label for="address" class="block text-sm font-semibold text-slate-700 mb-1">Permanent Address</label>
+                                <label for="address" class="block text-sm font-semibold text-slate-700 mb-1">Address</label>
                                 <textarea id="address" name="address" rows="2" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all">{{ old('address', $user->profile?->address) }}</textarea>
                             </div>
-                            @endif
                         </div>
                     </div>
 
                     <div class="pt-6">
-                        <button type="submit" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
-                            Save Profile
+                        <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
+                            {{ $user->profile ? 'Update Profile' : 'Create Profile' }}
                         </button>
                     </div>
                 </form>
+
+                @if($user->profile)
+                    <form action="{{ route('profile.destroy') }}" method="POST" class="pt-3">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full py-3 bg-white text-red-600 rounded-xl font-bold border border-red-200 hover:bg-red-50 transition-all">
+                            Delete Profile
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
     </main>

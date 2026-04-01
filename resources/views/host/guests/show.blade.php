@@ -23,9 +23,13 @@
             <div class="px-8 pb-8">
                 <div class="relative flex justify-between items-end -mt-16 mb-6">
                     <div class="w-32 h-32 bg-white rounded-full p-2">
-                        <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-4xl text-slate-500 font-bold">
-                            {{ substr($guest->name, 0, 1) }}
-                        </div>
+                        @if($guest->profile?->avatar)
+                            <img src="{{ $guest->profile->avatar }}" alt="{{ $guest->name }}" class="w-full h-full rounded-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-4xl text-slate-500 font-bold">
+                                {{ substr($guest->name, 0, 1) }}
+                            </div>
+                        @endif
                     </div>
                 </div>
 
