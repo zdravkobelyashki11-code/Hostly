@@ -6,6 +6,7 @@ use App\Http\Controllers\HostDashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\GuestDashboardController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
     Route::post('/properties/{property}/book', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}/messages', [MessageController::class, 'index'])->name('bookings.messages.index');
+    Route::post('/bookings/{booking}/messages', [MessageController::class, 'store'])->name('bookings.messages.store');
 });
 
 

@@ -90,6 +90,10 @@
                                         @if($booking->status !== Booking::STATUS_REJECTED && $booking->check_in > now())
                                             <a href="{{ route('guest.bookings.edit', $booking) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Edit Dates</a>
                                         @endif
+
+                                        @if($booking->status !== Booking::STATUS_REJECTED)
+                                            <a href="{{ route('bookings.messages.index', $booking) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">Message Host</a>
+                                        @endif
                                         
                                         @if($booking->status === Booking::STATUS_CONFIRMED && $booking->check_out < now() && (!$booking->propertyReviewByGuest || !$booking->hostReviewByGuest))
                                             <button @click="showReviewForm = !showReviewForm" class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors mt-2 shadow-sm">Leave Review</button>

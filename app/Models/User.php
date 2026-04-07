@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class, 'guest_id');
     }
 
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
     /**
      * A user has one profile.
      */

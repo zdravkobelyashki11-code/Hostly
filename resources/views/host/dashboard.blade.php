@@ -137,6 +137,10 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right" x-data="{ showReviewForm: false }">
+                                        @if($booking->status !== Booking::STATUS_REJECTED)
+                                            <a href="{{ route('bookings.messages.index', $booking) }}" class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors mb-2">Message Guest</a>
+                                        @endif
+
                                         @if($booking->status === Booking::STATUS_PENDING)
                                             <div class="flex justify-end gap-2">
                                                 <form action="{{ route('host.bookings.approve', $booking) }}" method="POST" class="inline">
