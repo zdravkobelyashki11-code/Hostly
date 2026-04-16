@@ -7,6 +7,7 @@ use App\Models\PropertyImage;
 use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HostDashboardController extends Controller
 {
@@ -148,6 +149,32 @@ class HostDashboardController extends Controller
         $property->delete();
 
         return redirect()->route('host.dashboard')->with('success', 'Property archived successfully!');
+    }
+
+    /**
+     * Delete an image from a host-owned property.
+     */
+    public function destroyImage(Property $property, PropertyImage $image)
+    {
+        if ($property->host_id !== auth()->id() || $image->property_id !== $property->id) {
+            abort(404);
+        }
+
+        $wasPrimary = $image->is_primary;
+
+        Storage::disk('public')->delete($image->image_path);
+        $image->delete();
+
+        if ($wasPrimary) {
+            $property->images()
+                ->orderBy('sort_order')
+                ->first()
+                ?->update(['is_primary' => true]);
+        }
+
+        return redirect()
+            ->route('host.properties.edit', $property)
+            ->with('success', 'Image deleted successfully.');
     }
 
     /**

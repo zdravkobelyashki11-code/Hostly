@@ -29,6 +29,12 @@
             <h1 class="text-3xl font-bold text-slate-800 mt-4">{{ isset($property) ? 'Edit Property' : 'Add New Property' }}</h1>
         </div>
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- Validation Errors --}}
         @if($errors->any())
             <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
@@ -38,6 +44,39 @@
                     @endforeach
                 </ul>
             </div>
+        @endif
+
+        @if(isset($property) && $property->images->isNotEmpty())
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-800">Existing Images</h2>
+                    <p class="text-sm text-slate-500">Delete any image you no longer want to show.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    @foreach($property->images as $image)
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden">
+                            <img src="{{ $image->display_url }}" alt="{{ $property->title }}" class="w-full h-44 object-cover">
+                            <div class="p-4 flex items-center justify-between gap-4">
+                                <div class="text-sm text-slate-600">
+                                    @if($image->is_primary)
+                                        <span class="inline-flex px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-semibold">Primary image</span>
+                                    @else
+                                        <span>Gallery image</span>
+                                    @endif
+                                </div>
+                                <form action="{{ route('host.properties.images.destroy', ['property' => $property, 'image' => $image]) }}" method="POST" onsubmit="return confirm('Delete this image?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
         @endif
 
         {{-- Form --}}

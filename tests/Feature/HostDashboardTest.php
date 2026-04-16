@@ -2,6 +2,8 @@
 
 use App\Models\User;
 use App\Models\Property;
+use App\Models\PropertyImage;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,4 +125,64 @@ it('prevents a host from deleting another hosts property', function () {
 
     $response->assertStatus(404);
     $this->assertDatabaseHas('properties', ['id' => $property->id]);
+});
+
+it('allows a host to delete an image from their own property', function () {
+    Storage::fake('public');
+
+    $host = User::factory()->host()->create();
+    $property = Property::factory()->create(['host_id' => $host->id]);
+
+    Storage::disk('public')->put('properties/primary.jpg', 'primary');
+    Storage::disk('public')->put('properties/secondary.jpg', 'secondary');
+
+    $primaryImage = PropertyImage::create([
+        'property_id' => $property->id,
+        'image_path' => 'properties/primary.jpg',
+        'is_primary' => true,
+        'sort_order' => 0,
+    ]);
+
+    $secondaryImage = PropertyImage::create([
+        'property_id' => $property->id,
+        'image_path' => 'properties/secondary.jpg',
+        'is_primary' => false,
+        'sort_order' => 1,
+    ]);
+
+    $response = $this->actingAs($host)->delete(route('host.properties.images.destroy', [
+        'property' => $property,
+        'image' => $primaryImage,
+    ]));
+
+    $response->assertRedirect(route('host.properties.edit', $property));
+    $this->assertDatabaseMissing('property_images', ['id' => $primaryImage->id]);
+    $this->assertDatabaseHas('property_images', ['id' => $secondaryImage->id, 'is_primary' => true]);
+    Storage::disk('public')->assertMissing('properties/primary.jpg');
+});
+
+it('prevents a host from deleting another hosts property image', function () {
+    Storage::fake('public');
+
+    $host = User::factory()->host()->create();
+    $otherHost = User::factory()->host()->create();
+    $property = Property::factory()->create(['host_id' => $otherHost->id]);
+
+    Storage::disk('public')->put('properties/foreign.jpg', 'foreign');
+
+    $image = PropertyImage::create([
+        'property_id' => $property->id,
+        'image_path' => 'properties/foreign.jpg',
+        'is_primary' => true,
+        'sort_order' => 0,
+    ]);
+
+    $response = $this->actingAs($host)->delete(route('host.properties.images.destroy', [
+        'property' => $property,
+        'image' => $image,
+    ]));
+
+    $response->assertStatus(404);
+    $this->assertDatabaseHas('property_images', ['id' => $image->id]);
+    Storage::disk('public')->assertExists('properties/foreign.jpg');
 });

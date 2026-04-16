@@ -97,3 +97,15 @@ it('redirects a guest to login when viewing a property', function () {
 
     $response->assertRedirect('/login');
 });
+
+it('does not show fake host profile facts on the property page', function () {
+    $user = User::factory()->create();
+    $property = Property::factory()->create();
+
+    $response = $this->actingAs($user)->get("/properties/{$property->id}");
+
+    $response->assertOk();
+    $response->assertDontSee('Response rate: 95%');
+    $response->assertDontSee('Email Verified');
+    $response->assertDontSee('Not Verified');
+});

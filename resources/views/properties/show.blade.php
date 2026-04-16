@@ -164,12 +164,9 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 text-sm text-slate-600 mb-4 border-y border-slate-200 py-3">
-                            <div>⭐ {{ $property->host->receivedReviews()->count() > 0 ? number_format($property->host->averageRating(), 1) : 'New' }} ({{ $property->host->receivedReviews()->count() }} Reviews)</div>
-                            <div>⏱ Response rate: 95%</div> <!-- Hardcoded -->
-                            <div>
-                                ✅ @if($property->host->email_verified_at) Email Verified @else Not Verified @endif
-                            </div>
+                        <div class="text-sm text-slate-600 mb-4 border-y border-slate-200 py-3">
+                            ⭐ {{ $property->host->receivedReviews()->count() > 0 ? number_format($property->host->averageRating(), 1) : 'New' }}
+                            ({{ $property->host->receivedReviews()->count() }} {{ $property->host->receivedReviews()->count() === 1 ? 'review' : 'reviews' }})
                         </div>
 
                         @if($property->host->profile?->bio)
